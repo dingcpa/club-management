@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>社團財務管理系統 | Club Finance</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <aside>
+        <div class="logo">Club Finance</div>
+        <nav>
+            <ul>
+                <li><a id="nav-dashboard" class="active">首頁概覽</a></li>
+                <li><a id="nav-members">社員明細</a></li>
+                <li><a id="nav-fees">社費繳交</a></li>
+                <li><a id="nav-expenses">支出管理</a></li>
+                <li><a id="nav-reports">年度報表</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main>
+        <header>
+            <h1 id="page-title">首頁概覽</h1>
+            <div id="header-actions"></div>
+        </header>
+
+        <!-- Dashboard Section -->
+        <section id="view-dashboard">
+            <div class="stats-grid">
+                <div class="card stat-card">
+                    <h3>總社員人數</h3>
+                    <div class="value" id="stat-members-count">0</div>
+                </div>
+                <div class="card stat-card">
+                    <h3>當前結餘</h3>
+                    <div class="value" id="stat-balance">$0</div>
+                </div>
+                <div class="card stat-card">
+                    <h3>年度總收入</h3>
+                    <div class="value" id="stat-income">$0</div>
+                </div>
+                <div class="card stat-card">
+                    <h3>年度總支出</h3>
+                    <div class="value" id="stat-expense">$0</div>
+                </div>
+            </div>
+
+            <div class="grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+                <div class="card">
+                    <h3>近期收支</h3>
+                    <div class="table-container">
+                        <table id="recent-transactions">
+                            <thead>
+                                <tr>
+                                    <th>日期</th>
+                                    <th>類型</th>
+                                    <th>項目</th>
+                                    <th>金額</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>快速操作</h3>
+                    <button class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;"
+                        onclick="app.showView('fees')">登記社費收款</button>
+                    <button class="btn btn-ghost" style="width: 100%;" onclick="app.showView('expenses')">登記支出</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Content Containers -->
+        <section id="view-members" class="hidden"></section>
+        <section id="view-fees" class="hidden"></section>
+        <section id="view-expenses" class="hidden"></section>
+        <section id="view-reports" class="hidden"></section>
+
+        <!-- Modals -->
+        <!-- Modals -->
+        <div id="modal-container" class="hidden">
+            <div class="modal-card">
+                <div id="modal-content"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
