@@ -1,0 +1,26 @@
+{
+  "name": "club-finance-v2",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "description": "嘉義中區扶輪社財務管理系統 v2",
+  "scripts": {
+    "dev:server": "node --watch server/index.js",
+    "dev:client": "npm run dev --prefix client",
+    "build": "npm install --prefix client && npm run build --prefix client",
+    "start": "node server/index.js",
+    "create-user": "node server/seed-user.js",
+    "seed-accounts": "node server/seed-accounts.js"
+  },
+  "dependencies": {
+    "@line/bot-sdk": "^9.5.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "exceljs": "^4.4.0",
+    "express": "^5.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.11.5"
+  }
+}
