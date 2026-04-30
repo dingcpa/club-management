@@ -1,6 +1,7 @@
 const express = require('express')
 const { pool } = require('../db')
 const { requireRole } = require('../auth')
+const pdfService = require('../services/pdf')
 
 const router = express.Router()
 
@@ -305,6 +306,54 @@ router.delete('/:id', requireRole('admin', 'treasurer'), async (req, res) => {
   // 取消請款單（不刪除，改 status）
   await pool.query(`UPDATE billings SET status='cancelled' WHERE id=?`, [id])
   res.json({ ok: true })
+})
+
+// ============================================================
+//  GET /api/billing/:id/pdf — 請款單 PDF
+// ============================================================
+router.get('/:id/pdf', async (req, res) => {
+  const id = parseInt(req.params.id)
+  const [headers] = await pool.query(
+    `SELECT b.*, m.name_zh, m.name_en, m.line_user_id, m.preferred_channel
+     FROM billings b
+     JOIN members m ON m.id = b.member_id
+     WHERE b.id=?`,
+    [id]
+  )
+  if (!headers.length) return res.status(404).json({ error: 'Not found' })
+  const [lines] = await pool.query(
+    `SELECT bl.*, bi.category, bi.period, bi.description AS item_description, a.name AS account_name
+     FROM billing_lines bl
+     JOIN billing_items bi ON bi.id = bl.billing_item_id
+     JOIN accounts a ON a.id = bi.account_id
+     WHERE bl.billing_id=?
+     ORDER BY bl.id`,
+    [id]
+  )
+
+  const billing = {
+    ...headers[0],
+    total_amount: parseFloat(headers[0].total_amount) || 0,
+    lines: lines.map((l) => ({ ...l, amount: parseFloat(l.amount) })),
+  }
+
+  try {
+    const pdf = await pdfService.buildBillingPdf(billing, {
+      clubName: process.env.CLUB_NAME,
+      bankInfo: process.env.BANK_INFO,
+      treasurerNote: process.env.TREASURER_NOTE,
+    })
+    const filename = `${billing.billing_no}_${billing.name_zh}.pdf`
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `inline; filename*=UTF-8''${encodeURIComponent(filename)}`,
+      'Cache-Control': 'no-cache',
+    })
+    res.send(pdf)
+  } catch (e) {
+    console.error('[PDF] failed:', e)
+    res.status(500).json({ error: 'PDF generation failed: ' + e.message })
+  }
 })
 
 module.exports = router

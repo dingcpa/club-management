@@ -107,6 +107,14 @@
           </template>
           <template #item.actions="{ item }">
             <v-btn icon="mdi-eye" size="small" variant="text" @click="openBillingView(item)" />
+            <v-btn
+              icon="mdi-file-pdf-box"
+              size="small"
+              variant="text"
+              color="error"
+              :loading="pdfLoading === item.id"
+              @click="downloadPdf(item)"
+            />
           </template>
         </v-data-table>
       </v-card>
@@ -269,9 +277,17 @@
             </tbody>
           </v-table>
 
-          <div class="mt-3">
+          <div class="mt-3 d-flex flex-wrap" style="gap: 8px;">
+            <v-btn
+              color="error"
+              variant="elevated"
+              prepend-icon="mdi-file-pdf-box"
+              :loading="pdfLoading === viewing.id"
+              @click="downloadPdf(viewing)"
+            >下載 PDF</v-btn>
+            <v-divider vertical />
             <v-btn-group variant="outlined" density="comfortable">
-              <v-btn prepend-icon="mdi-line" @click="logSend('line')">標記 LINE 私訊已發送</v-btn>
+              <v-btn prepend-icon="mdi-message-text" @click="logSend('line')">標記 LINE 私訊已發送</v-btn>
               <v-btn prepend-icon="mdi-email" @click="logSend('email')">標記 Email 已寄</v-btn>
               <v-btn prepend-icon="mdi-printer" @click="logSend('paper')">標記紙本已交</v-btn>
             </v-btn-group>
@@ -302,7 +318,8 @@ const viewDialog = ref(false)
 const viewing = ref(null)
 const saving = ref(false)
 
-const { items, billings, loading, fetchItems, fetchBillings, fetchBilling, generateMonthly: gen, createBilling, logSend: logSendApi } = billingApi
+const { items, billings, loading, fetchItems, fetchBillings, fetchBilling, generateMonthly: gen, createBilling, logSend: logSendApi, downloadPdf: downloadPdfApi } = billingApi
+const pdfLoading = ref(null)
 
 const billingForm = ref({
   member_id: null,
@@ -441,6 +458,18 @@ async function openBillingView(item) {
 async function logSend(channel) {
   await logSendApi(viewing.value.id, { channel, status: 'sent' })
   viewing.value = await fetchBilling(viewing.value.id)
+}
+
+async function downloadPdf(item) {
+  pdfLoading.value = item.id
+  try {
+    const filename = `${item.billing_no}_${item.name_zh}.pdf`
+    await downloadPdfApi(item.id, filename)
+  } catch (e) {
+    Swal.fire('PDF 失敗', e.message, 'error')
+  } finally {
+    pdfLoading.value = null
+  }
 }
 
 function statusLabel(s) {

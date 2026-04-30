@@ -18,9 +18,9 @@
 | 代墊款工作流（多人 + 跨屆） | ✅ | AdvancesPage |
 | 認捐單（紅白包/捐贈/旅遊房費） | ✅ | ContributionsPage |
 | 待補單據追蹤 | ✅ | DashboardPage 提醒區 |
+| **PDF 請款單** | ✅ | `services/pdf.js`（puppeteer） |
 
 ⏳ **Phase 1 尚未做（可稍後補）**
-- PDF 請款單產生（目前只有 Excel；PDF 留 Phase 2 配合 LINE Bot 私訊一起做）
 - 屆別結轉作業（Phase 3）
 
 ⏳ **Phase 2（強烈建議，2026/7 上線後盡快做）**
@@ -156,7 +156,7 @@ npm run dev
 
 ## 已知限制 / 後續優化點
 
-1. **PDF 請款單尚未做**：目前只有 Excel 匯出月份收支表。PDF 留待 Phase 2 配合 LINE Bot 一起做（避免重工）。
+1. **PDF 請款單客製欄位**：在 `.env` 設定 `CLUB_NAME`、`BANK_INFO`、`TREASURER_NOTE` 即可改 PDF 上的銀行帳號與司庫備註。
 2. **單張帳冊大資料量**：應收項目單筆 INSERT 在批次產生月份社費時是 35 人 × 4 項 = 140 個 INSERT。Phase 1 規模沒問題；若日後真的太慢可改 batch insert。
 3. **沒做活動 / 例會 / 行事曆**：留 Phase 2。
 4. **沒做預算 vs 決算對比**：留 Phase 3。

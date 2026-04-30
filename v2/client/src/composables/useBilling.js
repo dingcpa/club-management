@@ -59,10 +59,32 @@ export function useBilling() {
     return res.json()
   }
 
+  async function downloadPdf(billingId, filename) {
+    const { useAuth } = await import('./useAuth.js')
+    const { getToken } = useAuth()
+    const res = await fetch(`/api/billing/${billingId}/pdf`, {
+      headers: { Authorization: `Bearer ${getToken()}` },
+    })
+    if (!res.ok) throw new Error('PDF 下載失敗')
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = filename || `billing-${billingId}.pdf`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
+  function openPdfInNewTab(billingId) {
+    // 用 token 走 fetch+blob 比直接開連結穩（連結沒辦法帶 Authorization）
+    const { useAuth } = require('./useAuth.js')
+    return downloadPdf(billingId)
+  }
+
   return {
     items, billings, loading,
     fetchItems, fetchBillings, fetchBilling,
     generateMonthly, createItem, updateItem, deleteItem,
-    createBilling, logSend,
+    createBilling, logSend, downloadPdf,
   }
 }
